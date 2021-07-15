@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:sekolahku/domain/student_domain.dart';
 import 'package:sekolahku/repository/student_repository.dart';
 
@@ -6,16 +7,16 @@ class StudentService {
 
   const StudentService(this.repository);
 
-  void createStudent(Student domain) {
+  Future<int> createStudent(Student domain) {
     return repository.create(domain);
   }
 
-  List<Student> findAllStudents() {
+  Future<List<Student>> findAllStudents() {
     return repository.findAll();
   }
 
-  Student findStudentBy({required int index}) {
-    return repository.findOne(index);
+  Future<Student> findStudentBy({required int id}) {
+    return repository.findOne(id);
   }
 
   void deleteStudentBy({required int index}) {
