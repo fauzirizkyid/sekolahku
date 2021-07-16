@@ -14,8 +14,8 @@ class StudentList extends StatefulWidget {
 
 class _StudentListState extends State<StudentList> {
   final _searchForm = TextEditingController();
-  bool _startSearch = false;
   List<Student> _students = [];
+  List<Student> _searchStudents = [];
 
   @override
   void initState() {
@@ -34,7 +34,8 @@ class _StudentListState extends State<StudentList> {
             child: Components.textForm(
                 inputController: _searchForm,
                 hint: 'Cari berdasarkan',
-                icon: FontAwesomeIcons.search),
+                icon: FontAwesomeIcons.search,
+                onChanged: _onSearchTextChanged),
           ),
           Expanded(
             child: FutureBuilder<List<Student>>(
@@ -55,37 +56,9 @@ class _StudentListState extends State<StudentList> {
 
                   print("_students: " + _students.length.toString());
 
-                  return ListView.separated(
-                    itemCount: _students.length,
-                    separatorBuilder: (BuildContext context, int i) => Divider(
-                      color: Colors.grey[400],
-                    ),
-                    itemBuilder: (BuildContext context, int i) {
-                      final Student student = _students[i];
-                      return ListTile(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => StudentDetail(
-                                        studentSelectedIndex: student.idStudent,
-                                      ))).then((value) {
-                            setState(() {});
-                          });
-                        },
-                        leading: Icon(FontAwesomeIcons.user),
-                        title: Text(student.fullName),
-                        subtitle: Text(capitalize(student.gender)),
-                        trailing: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: <Widget>[
-                            Text(student.grade.toUpperCase()),
-                            Text(student.mobilePhone)
-                          ],
-                        ),
-                      );
-                    },
-                  );
+                  return _searchStudents.length != 0 || _searchForm.text != ''
+                      ? _studentListData(_searchStudents)
+                      : _studentListData(_students);
                 }),
           )
         ],
@@ -104,5 +77,58 @@ class _StudentListState extends State<StudentList> {
         },
       ),
     );
+  }
+
+  Widget _studentListData(List<Student> studentData) => ListView.separated(
+        itemCount: studentData.length,
+        separatorBuilder: (BuildContext context, int i) => Divider(
+          color: Colors.grey[400],
+        ),
+        itemBuilder: (BuildContext context, int i) {
+          final Student student = studentData[i];
+          return ListTile(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => StudentDetail(
+                            studentSelectedIndex: student.idStudent,
+                          ))).then((value) {
+                setState(() {});
+              });
+            },
+            leading: Icon(FontAwesomeIcons.user),
+            title: Text(student.fullName),
+            subtitle: Text(capitalize(student.gender)),
+            trailing: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                Text(student.grade.toUpperCase()),
+                Text(student.mobilePhone)
+              ],
+            ),
+          );
+        },
+      );
+
+  _onSearchTextChanged(String text) async {
+    text = text.toLowerCase();
+    _searchStudents.clear();
+    if (text.isEmpty) {
+      setState(() {});
+      return;
+    }
+
+    _students.forEach((student) {
+      if (student.address.toLowerCase().contains(text) ||
+          student.grade.toLowerCase().contains(text) ||
+          student.firstName.toLowerCase().contains(text) ||
+          student.lastName.toLowerCase().contains(text) ||
+          student.gender.toLowerCase().replaceAll("_", " ").contains(text) ||
+          student.mobilePhone.toLowerCase().contains(text))
+        _searchStudents.add(student);
+    });
+
+    setState(() {});
   }
 }

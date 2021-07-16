@@ -14,8 +14,8 @@ class TeacherList extends StatefulWidget {
 
 class _TeacherListState extends State<TeacherList> {
   final _searchForm = TextEditingController();
-  bool _startSearch = false;
   List<Teacher> teachers = [];
+  List<Teacher> searchTeachers = [];
 
   @override
   void initState() {
@@ -25,6 +25,7 @@ class _TeacherListState extends State<TeacherList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -34,7 +35,8 @@ class _TeacherListState extends State<TeacherList> {
             child: Components.textForm(
                 inputController: _searchForm,
                 hint: 'Cari berdasarkan',
-                icon: FontAwesomeIcons.search),
+                icon: FontAwesomeIcons.search,
+                onChanged: _onSearchTextChanged),
           ),
           Expanded(
             child: FutureBuilder<List<Teacher>>(
@@ -55,37 +57,9 @@ class _TeacherListState extends State<TeacherList> {
 
                   print("teachers: " + teachers.length.toString());
 
-                  return ListView.separated(
-                    itemCount: teachers.length,
-                    separatorBuilder: (BuildContext context, int i) => Divider(
-                      color: Colors.grey[400],
-                    ),
-                    itemBuilder: (BuildContext context, int i) {
-                      final Teacher teacher = teachers[i];
-                      return ListTile(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => TeacherDetail(
-                                        teacherSelectedIndex: teacher.idTeacher,
-                                      ))).then((value) {
-                            setState(() {});
-                          });
-                        },
-                        leading: Icon(FontAwesomeIcons.chalkboardTeacher),
-                        title: Text(teacher.fullName),
-                        subtitle: Text(capitalize(teacher.gender)),
-                        trailing: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: <Widget>[
-                            Text(teacher.birthDate.toUpperCase().substring(0,10)),
-                            Text(teacher.mobilePhone)
-                          ],
-                        ),
-                      );
-                    },
-                  );
+                  return searchTeachers.length != 0 || _searchForm.text != ''
+                      ? _teacherListData(searchTeachers)
+                      : _teacherListData(teachers);
                 }),
           )
         ],
@@ -104,5 +78,58 @@ class _TeacherListState extends State<TeacherList> {
         },
       ),
     );
+  }
+
+  Widget _teacherListData(List<Teacher> teacherData) => ListView.separated(
+        itemCount: teacherData.length,
+        separatorBuilder: (BuildContext context, int i) => Divider(
+          color: Colors.grey[400],
+        ),
+        itemBuilder: (BuildContext context, int i) {
+          final Teacher teacher = teacherData[i];
+          return ListTile(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => TeacherDetail(
+                            teacherSelectedIndex: teacher.idTeacher,
+                          ))).then((value) {
+                setState(() {});
+              });
+            },
+            leading: Icon(FontAwesomeIcons.chalkboardTeacher),
+            title: Text(teacher.fullName),
+            subtitle: Text(capitalize(teacher.gender)),
+            trailing: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                Text(teacher.birthDate.toUpperCase().substring(0, 10)),
+                Text(teacher.mobilePhone)
+              ],
+            ),
+          );
+        },
+      );
+
+  _onSearchTextChanged(String text) async {
+    text = text.toLowerCase();
+    searchTeachers.clear();
+    if (text.isEmpty) {
+      setState(() {});
+      return;
+    }
+
+    teachers.forEach((teacher) {
+      if (teacher.address.toLowerCase().contains(text) ||
+          teacher.birthDate.toLowerCase().contains(text) ||
+          teacher.firstName.toLowerCase().contains(text) ||
+          teacher.lastName.toLowerCase().contains(text) ||
+          teacher.gender.toLowerCase().replaceAll("_", " ").contains(text) ||
+          teacher.mobilePhone.toLowerCase().contains(text))
+        searchTeachers.add(teacher);
+    });
+
+    setState(() {});
   }
 }
