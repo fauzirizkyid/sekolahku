@@ -1,30 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:sekolahku/domain/student_domain.dart';
+import 'package:sekolahku/domain/teacher_domain.dart';
 import 'package:sekolahku/service/app_service.dart';
 import 'package:sekolahku/util/capitalize.dart';
 import 'package:sekolahku/widgets/components.dart';
 
-class StudentForm extends StatefulWidget {
+class TeacherForm extends StatefulWidget {
   final String title;
   final bool isEdit;
-  final Student? studentDomain;
+  final Teacher? teacherDomain;
 
-  const StudentForm(
-      {required this.title, required this.isEdit, this.studentDomain});
+  const TeacherForm(
+      {required this.title, required this.isEdit, this.teacherDomain});
 
   @override
-  _StudentFormState createState() => _StudentFormState();
+  _TeacherFormState createState() => _TeacherFormState();
 }
 
-class _StudentFormState extends State<StudentForm> {
-  final _formAddStudent = GlobalKey<FormState>();
+class _TeacherFormState extends State<TeacherForm> {
+  final _formAddTeacher = GlobalKey<FormState>();
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _addressController = TextEditingController();
   String? _gender;
-  String? _grade;
-  List<String> _hobbies = <String>[];
+  DateTime? _inputBirthDate;
+  List<String> _lessons = <String>[];
   List<Map<String, dynamic>> _formData = [];
 
   @override
@@ -49,7 +49,7 @@ class _StudentFormState extends State<StudentForm> {
   }
 
   Widget _listView() => Form(
-        key: _formAddStudent,
+        key: _formAddTeacher,
         child: ListView(
           padding: LayoutStyled.paddingAllSide,
           children: [
@@ -59,7 +59,7 @@ class _StudentFormState extends State<StudentForm> {
                 physics: NeverScrollableScrollPhysics(),
                 itemBuilder: (BuildContext context, int index) {
                   if (_formData[index]['title'] == 'Jenis Kelamin') {
-                    // _gender = Student.genders[0];
+                    // _gender = Teacher.genders[0];
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -74,7 +74,7 @@ class _StudentFormState extends State<StudentForm> {
                           ),
                         ),
                         Row(
-                            children: Student.genders
+                            children: Teacher.genders
                                 .map((valueGender) => Container(
                                       child: Components.labeledRadio(
                                           value: valueGender,
@@ -89,40 +89,7 @@ class _StudentFormState extends State<StudentForm> {
                                 .toList()),
                       ],
                     );
-                  } else if (_formData[index]['title'] == 'Kelas') {
-                    print(Student.grades);
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        RichText(
-                          text: TextSpan(
-                            text: _formData[index]['title'],
-                            style: TextStyled.bodyBold,
-                            children: <TextSpan>[
-                              TextSpan(text: ' *', style: TextStyled.redBody)
-                            ],
-                          ),
-                        ),
-                        DropdownButton<String>(
-                          items: Student.grades
-                              .map((valueGrade) => DropdownMenuItem(
-                                  child: Text(valueGrade.toUpperCase()),
-                                  value: valueGrade))
-                              .toList(),
-                          value: _grade,
-                          onChanged: (value) {
-                            setState(() {
-                              _grade = value!;
-                            });
-                          },
-                          isExpanded: true,
-                          hint: Text("Pilih Kelas"),
-                        ),
-                      ],
-                    );
-                  } else if (_formData[index]['title'] == 'Hobi') {
-                    print(Student.grades);
+                  } else if (_formData[index]['title'] == 'Mata Pelajaran') {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -137,18 +104,19 @@ class _StudentFormState extends State<StudentForm> {
                           ),
                         ),
                         Column(
-                          children: Student.hobbiesList
-                              .map((valueHobby) => Container(
+                          children: Teacher.lessonList
+                              .map((valueLesson) => Container(
                                     child: Components.customCheckbox(
-                                      text: capitalize(valueHobby),
-                                      value: _hobbies.contains(valueHobby),
+                                      text: capitalize(valueLesson),
+                                      value: _lessons.contains(valueLesson),
                                       onChanged: (value) {
                                         setState(() {
-                                          if (_hobbies.contains(valueHobby)) {
-                                            _hobbies.remove(valueHobby);
+                                          if (_lessons.contains(valueLesson)) {
+                                            _lessons.remove(valueLesson);
                                           } else {
-                                            _hobbies.add(valueHobby);
+                                            _lessons.add(valueLesson);
                                           }
+                                          print(_lessons);
                                         });
                                       },
                                     ),
@@ -157,6 +125,20 @@ class _StudentFormState extends State<StudentForm> {
                         ),
                       ],
                     );
+                  } else if (_formData[index]['title'] == 'Tanggal Lahir') {
+                    return Components.dateTimePicker(
+                        context: context,
+                        title: "Tanggal Lahir",
+                        hint: "Masukkan tanggal lahir",
+                        todayIsLastDate: true,
+                        dateOnly: true,
+                        mandatory: true,
+                        initDateTime: _inputBirthDate,
+                        onDateTimeChanged: (newDateTime) {
+                          setState(() {
+                            _inputBirthDate = newDateTime;
+                          });
+                        });
                   } else {
                     return Components.textForm(
                         inputController: _formData[index]['controller'],
@@ -169,23 +151,23 @@ class _StudentFormState extends State<StudentForm> {
                 }),
             ElevatedButton(
               onPressed: () {
-                if (_formAddStudent.currentState!.validate()) {
-                  Student studentDomain = Student();
-                  studentDomain.address = _addressController.text.trim();
-                  studentDomain.hobbies = _hobbies;
-                  studentDomain.grade = _grade!;
-                  studentDomain.gender = _gender!;
-                  studentDomain.mobilePhone = _phoneController.text.trim();
-                  studentDomain.firstName = _firstNameController.text.trim();
-                  studentDomain.lastName = _lastNameController.text.trim();
+                if (_formAddTeacher.currentState!.validate()) {
+                  Teacher teacherDomain = Teacher();
+                  teacherDomain.address = _addressController.text.trim();
+                  teacherDomain.lessons = _lessons;
+                  teacherDomain.birthDate = _inputBirthDate.toString();
+                  teacherDomain.gender = _gender!;
+                  teacherDomain.mobilePhone = _phoneController.text.trim();
+                  teacherDomain.firstName = _firstNameController.text.trim();
+                  teacherDomain.lastName = _lastNameController.text.trim();
 
                   if (widget.isEdit) {
-                    print(widget.studentDomain!.createdAt);
-                    AppService.studentService
-                        .updateStudent(
-                            id: widget.studentDomain!.idStudent,
-                            studentDomain: studentDomain,
-                            createdAt: widget.studentDomain!.createdAt)
+                    print(teacherDomain.lessons);
+                    AppService.teacherService
+                        .updateTeacher(
+                            id: widget.teacherDomain!.idTeacher,
+                            teacherDomain: teacherDomain,
+                            createdAt: widget.teacherDomain!.createdAt)
                         .then((value) {
                       Navigator.pop(context);
                     }).catchError((error) {
@@ -193,8 +175,8 @@ class _StudentFormState extends State<StudentForm> {
                           SnackBar(content: Text(error.toString())));
                     });
                   } else {
-                    AppService.studentService
-                        .createStudent(studentDomain)
+                    AppService.teacherService
+                        .createTeacher(teacherDomain)
                         .then((value) {
                       Navigator.pop(context);
                     }).catchError((error) {
@@ -218,31 +200,31 @@ class _StudentFormState extends State<StudentForm> {
 
   void _initFormData() {
     if (widget.isEdit) {
-      _firstNameController.text = widget.studentDomain!.firstName;
-      _lastNameController.text = widget.studentDomain!.lastName;
-      _phoneController.text = widget.studentDomain!.mobilePhone;
-      _addressController.text = widget.studentDomain!.address;
+      _firstNameController.text = widget.teacherDomain!.firstName;
+      _lastNameController.text = widget.teacherDomain!.lastName;
+      _phoneController.text = widget.teacherDomain!.mobilePhone;
+      _addressController.text = widget.teacherDomain!.address;
 
-      // for (var i = 0; i < Student.genders.length; i++) {
-      //   if (widget.studentDomain!.gender == Student.genders[i]) {
-      //     _gender = Student.genders[i];
+      // for (var i = 0; i < Teacher.genders.length; i++) {
+      //   if (widget.teacherDomain!.gender == Teacher.genders[i]) {
+      //     _gender = Teacher.genders[i];
       //     break;
       //   }
       // }
 
-      // for (var i = 0; i < Student.grades.length; i++) {
-      //   if (widget.studentDomain!.grade == Student.grades[i]) {
-      //     _grade = Student.grades[i];
+      // for (var i = 0; i < Teacher.grades.length; i++) {
+      //   if (widget.teacherDomain!.grade == Teacher.grades[i]) {
+      //     _birthDate = Teacher.grades[i];
       //     break;
       //   }
       // }
-      _gender = widget.studentDomain!.gender;
-      _grade = widget.studentDomain!.grade;
+      _gender = widget.teacherDomain!.gender;
+      _inputBirthDate = DateTime.parse(widget.teacherDomain!.birthDate);
 
-      for (var i = 0; i < Student.hobbiesList.length; i++) {
-        for (var x = 0; x < widget.studentDomain!.hobbies.length; x++) {
-          if (widget.studentDomain!.hobbies[x] == Student.hobbiesList[i]) {
-            _hobbies.add(Student.hobbiesList[i]);
+      for (var i = 0; i < Teacher.lessonList.length; i++) {
+        for (var x = 0; x < widget.teacherDomain!.lessons.length; x++) {
+          if (widget.teacherDomain!.lessons[x] == Teacher.lessonList[i]) {
+            _lessons.add(Teacher.lessonList[i]);
             break;
           }
         }
@@ -280,8 +262,8 @@ class _StudentFormState extends State<StudentForm> {
         'mandatory': true,
       },
       {
-        'title': 'Kelas',
-        'typeForm': 'dropdown',
+        'title': 'Tanggal Lahir',
+        'typeForm': 'date',
         'mandatory': true,
       },
       {
@@ -293,7 +275,7 @@ class _StudentFormState extends State<StudentForm> {
         'maxLines': 3
       },
       {
-        'title': 'Hobi',
+        'title': 'Mata Pelajaran',
         'typeForm': 'checkbox',
         'mandatory': true,
       },

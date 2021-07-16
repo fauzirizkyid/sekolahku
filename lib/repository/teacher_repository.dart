@@ -1,17 +1,16 @@
 // lib/repository/student_repository.dart
 import 'dart:core';
 import 'dart:async';
-import 'package:sekolahku/domain/student_domain.dart';
+import 'package:sekolahku/domain/teacher_domain.dart';
 import 'package:sekolahku/model/model_provider.dart';
 
-class StudentRepository {
-  static const String tableName = 'Siswa';
-  // List<Student> students = generateStudents();
+class TeacherRepository {
+  static const String tableName = 'Guru';
   final ModelProvider? modelProvider;
 
-  StudentRepository(this.modelProvider);
+  TeacherRepository(this.modelProvider);
 
-  Future<int> create(Student domain) {
+  Future<int> create(Teacher domain) {
     final siswa = domain.toMap();
     print('[db] is creating $siswa');
     return modelProvider!
@@ -19,17 +18,17 @@ class StudentRepository {
         .then((database) => database!.insert(tableName, siswa));
   }
 
-  Future<List<Student>> findAll() {
+  Future<List<Teacher>> findAll() {
     var sql = '''
     SELECT
-        id_siswa AS id,
+        id_guru AS id,
         first_name AS firstName,
         last_name AS lastName,
         mobile_phone AS mobilePhone,
         gender,
-        grade,
-        hobbies,
         address,
+        lessons,
+        birth_date AS birthDate,
         created_at AS createdAt,
         updated_at AS updatedAt
       FROM
@@ -45,70 +44,68 @@ class StudentRepository {
       if (data.length == 0) {
         return [];
       } else {
-        List<Student> students = [];
-        print(students);
+        List<Teacher> teachers = [];
+        print(teachers);
         for (var i = 0; i < data.length; i++) {
-          Student student = Student();
-          student.fromMap(data[i]);
-          students.add(student);
+          Teacher teacher = Teacher();
+          teacher.fromMap(data[i]);
+          teachers.add(teacher);
           print("masuk sini>");
         }
 
-        print("students:" + students.length.toString());
+        print("teachers:" + teachers.length.toString());
 
-        return students;
+        return teachers;
       }
     });
   }
 
-  Future<Student> findOne(int id) {
+  Future<Teacher> findOne(int id) {
     print("Masuk fungsi findOne dengan id: " + id.toString());
     final sql = '''
       SELECT
-        id_siswa AS id,
+        id_guru AS id,
         first_name AS firstName,
         last_name AS lastName,
-        mobile_phone AS mobilePhone,
         gender,
-        grade,
-        hobbies,
+        mobile_phone AS mobilePhone,
         address,
+        lessons,
+        birth_date AS birthDate,
         created_at AS createdAt,
         updated_at AS updatedAt
       FROM
         $tableName
-      WHERE id_siswa = $id;
+      WHERE id_guru = $id;
     ''';
     return modelProvider!
         .getDatabase()
         .then((database) => database!.rawQuery(sql))
         .then((data) async {
       print('[db] success retrieve $data by id = $id');
-      final Student student = Student();
+      final Teacher teacher = Teacher();
       if (data.length == 1) {
-        student.fromMap(data[0]);
+        teacher.fromMap(data[0]);
 
-        return student;
+        return teacher;
       }
 
-      return student;
+      return teacher;
     });
-    // return students[index];
+    // return teachers[index];
   }
 
-  Future<void> delete(int idSiswa) {
+  Future<void> delete(int idTeacher) {
     return modelProvider!
         .getDatabase()
-        .then((value) => value!.delete('siswa', where: 'id_siswa = $idSiswa'));
+        .then((value) => value!.delete('guru', where: 'id_guru = $idTeacher'));
   }
 
-  Future<int> updateStudent(int? idStudent, Student student, String createdAt) {
-    print("student.createdAt1");
-    print("student.createdAt");
-    print(createdAt);
+  Future<int> updateTeacher(int? idTeacher, Teacher teacher, String createdAt) {
+    print(teacher.lessons);
     return modelProvider!.getDatabase().then((value) {
       return value!
-          .update('siswa', student.toMap(createdData: createdAt), where: 'id_siswa = $idStudent');
+          .update('guru', teacher.toMap(createdData: createdAt), where: 'id_guru = $idTeacher');
     });
   }
 }

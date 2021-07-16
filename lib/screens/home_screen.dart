@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sekolahku/screens/student_screens/student_list_screen.dart';
+import 'package:sekolahku/screens/teacher_screens/teacher_list_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -25,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
           body: TabBarView(
             children: [
               StudentList(),
-              StudentList(),
+              TeacherList(),
             ],
           ),
         ),

@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:sekolahku/domain/student_domain.dart';
-import 'package:sekolahku/screens/student_screens/student_detail_screen.dart';
-import 'package:sekolahku/screens/student_screens/student_form_screen.dart';
+import 'package:sekolahku/domain/teacher_domain.dart';
+import 'package:sekolahku/screens/teacher_screens/teacher_detail_screen.dart';
+import 'package:sekolahku/screens/teacher_screens/teacher_form_screen.dart';
 import 'package:sekolahku/service/app_service.dart';
 import 'package:sekolahku/util/capitalize.dart';
 import 'package:sekolahku/widgets/components.dart';
 
-class StudentList extends StatefulWidget {
+class TeacherList extends StatefulWidget {
   @override
-  _StudentListState createState() => _StudentListState();
+  _TeacherListState createState() => _TeacherListState();
 }
 
-class _StudentListState extends State<StudentList> {
+class _TeacherListState extends State<TeacherList> {
   final _searchForm = TextEditingController();
   bool _startSearch = false;
-  List<Student> _students = [];
+  List<Teacher> teachers = [];
 
   @override
   void initState() {
@@ -37,8 +37,8 @@ class _StudentListState extends State<StudentList> {
                 icon: FontAwesomeIcons.search),
           ),
           Expanded(
-            child: FutureBuilder<List<Student>>(
-                future: AppService.studentService.findAllStudents(),
+            child: FutureBuilder<List<Teacher>>(
+                future: AppService.teacherService.findAllTeachers(),
                 builder: (context, snapshot) {
                   // print('snapshot.data.length ${snapshot.data![0].firstName}');
                   if ((snapshot.connectionState == ConnectionState.none &&
@@ -47,40 +47,40 @@ class _StudentListState extends State<StudentList> {
                     print('project snapshot data is: ${snapshot.data}');
                     return LinearProgressIndicator();
                   } else if (snapshot.hasData && snapshot.data!.length > 0) {
-                    _students = snapshot.data!;
+                    teachers = snapshot.data!;
                   } else {
                     print("ke container");
                     return Container();
                   }
 
-                  print("_students: " + _students.length.toString());
+                  print("teachers: " + teachers.length.toString());
 
                   return ListView.separated(
-                    itemCount: _students.length,
+                    itemCount: teachers.length,
                     separatorBuilder: (BuildContext context, int i) => Divider(
                       color: Colors.grey[400],
                     ),
                     itemBuilder: (BuildContext context, int i) {
-                      final Student student = _students[i];
+                      final Teacher teacher = teachers[i];
                       return ListTile(
                         onTap: () {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => StudentDetail(
-                                        studentSelectedIndex: student.idStudent,
+                                  builder: (context) => TeacherDetail(
+                                        teacherSelectedIndex: teacher.idTeacher,
                                       ))).then((value) {
                             setState(() {});
                           });
                         },
-                        leading: Icon(FontAwesomeIcons.user),
-                        title: Text(student.fullName),
-                        subtitle: Text(capitalize(student.gender)),
+                        leading: Icon(FontAwesomeIcons.chalkboardTeacher),
+                        title: Text(teacher.fullName),
+                        subtitle: Text(capitalize(teacher.gender)),
                         trailing: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: <Widget>[
-                            Text(student.grade.toUpperCase()),
-                            Text(student.mobilePhone)
+                            Text(teacher.birthDate.toUpperCase().substring(0,10)),
+                            Text(teacher.mobilePhone)
                           ],
                         ),
                       );
@@ -97,7 +97,7 @@ class _StudentListState extends State<StudentList> {
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
-                          StudentForm(title: 'Tambah Murid', isEdit: false)))
+                          TeacherForm(title: 'Tambah Guru', isEdit: false)))
               .then((value) {
             setState(() {});
           });

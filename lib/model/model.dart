@@ -11,7 +11,7 @@ class Model {
 
   Future<void> onCreate(Database db, int version) async {
     print('[db] create version ${version.toString()}');
-    final sql = '''
+    String sqlStudent = '''
       CREATE TABLE IF NOT EXISTS Siswa (
         id_siswa INTEGER PRIMARY KEY NOT NULL,
         first_name TEXT(20),
@@ -25,7 +25,23 @@ class Model {
         updated_at TEXT
       );
     ''';
-    await db.execute(sql);
+
+    String sqlTeacher = '''
+      CREATE TABLE IF NOT EXISTS Guru (
+        id_guru INTEGER PRIMARY KEY NOT NULL,
+        first_name TEXT(20),
+        last_name TEXT(20),
+        gender TEXT(6),
+        address TEXT(45),
+        mobile_phone TEXT(13),
+        lessons TEXT,
+        birth_date TEXT(45),
+        created_at TEXT,
+        updated_at TEXT
+      );
+    ''';
+    await db.execute(sqlTeacher);
+    await db.execute(sqlStudent);
   }
 
   Future<void> onUpgrade(Database db, int oldVersion, int newVersion) async {

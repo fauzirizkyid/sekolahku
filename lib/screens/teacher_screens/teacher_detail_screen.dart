@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:sekolahku/domain/student_domain.dart';
-import 'package:sekolahku/screens/student_screens/student_form_screen.dart';
+import 'package:sekolahku/domain/teacher_domain.dart';
+import 'package:sekolahku/screens/teacher_screens/teacher_form_screen.dart';
 import 'package:sekolahku/service/app_service.dart';
 import 'package:sekolahku/util/capitalize.dart';
 import 'package:sekolahku/widgets/components_alerts.dart';
 
-class StudentDetail extends StatefulWidget {
-  final int studentSelectedIndex;
+class TeacherDetail extends StatefulWidget {
+  final int teacherSelectedIndex;
 
-  StudentDetail({required this.studentSelectedIndex});
+  TeacherDetail({required this.teacherSelectedIndex});
 
   @override
-  _StudentDetailState createState() => _StudentDetailState();
+  _TeacherDetailState createState() => _TeacherDetailState();
 }
 
-class _StudentDetailState extends State<StudentDetail> {
-  Student _studentDetail = Student();
+class _TeacherDetailState extends State<TeacherDetail> {
+  Teacher _teacherDetail = Teacher();
 
   @override
   void initState() {
@@ -27,7 +27,7 @@ class _StudentDetailState extends State<StudentDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Detail Murid'),
+        title: const Text('Detail Guru'),
         actions: [
           IconButton(
             icon: Icon(
@@ -38,10 +38,10 @@ class _StudentDetailState extends State<StudentDetail> {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => StudentForm(
-                            title: 'Edit Murid',
+                      builder: (context) => TeacherForm(
+                            title: 'Edit Guru',
                             isEdit: true,
-                            studentDomain: _studentDetail,
+                            teacherDomain: _teacherDetail,
                           ))).then((value) {
                 setState(() {});
               });
@@ -55,26 +55,26 @@ class _StudentDetailState extends State<StudentDetail> {
             onPressed: () {
               showAlertDialog(context,
                   content: 'Apa anda yakin akan menghapus data ' +
-                      _studentDetail.fullName, continueAction: () {
+                      _teacherDetail.fullName, continueAction: () {
                 Navigator.of(context, rootNavigator: true).pop();
-                AppService.studentService
-                    .deleteStudentBy(index: widget.studentSelectedIndex)
+                AppService.teacherService
+                    .deleteTeacherBy(index: widget.teacherSelectedIndex)
                     .then((value) => {Navigator.pop(context, true)});
               });
             },
           ),
         ],
       ),
-      body: FutureBuilder<Student>(
-          future: AppService.studentService
-              .findStudentBy(id: widget.studentSelectedIndex),
+      body: FutureBuilder<Teacher>(
+          future: AppService.teacherService
+              .findTeacherBy(id: widget.teacherSelectedIndex),
           builder: (context, snapshot) {
             if ((snapshot.connectionState == ConnectionState.none &&
                     !snapshot.hasData) ||
                 snapshot.connectionState == ConnectionState.waiting) {
               return LinearProgressIndicator();
             }
-            _studentDetail = snapshot.data!;
+            _teacherDetail = snapshot.data!;
 
             return Container(
               color: Colors.white,
@@ -82,7 +82,7 @@ class _StudentDetailState extends State<StudentDetail> {
                 Padding(
                   padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
                   child: Image.asset(
-                    _studentDetail.gender.toUpperCase() == 'PRIA'
+                    _teacherDetail.gender.toUpperCase() == 'PRIA'
                         ? 'assets/icons/male-icon.png'
                         : 'assets/icons/female-icon.png',
                     width: 150.0,
@@ -91,27 +91,27 @@ class _StudentDetailState extends State<StudentDetail> {
                 ),
                 ListTile(
                   leading: Icon(FontAwesomeIcons.user),
-                  title: Text(_studentDetail.fullName),
+                  title: Text(_teacherDetail.fullName),
                 ),
                 ListTile(
                   leading: Icon(FontAwesomeIcons.phone),
-                  title: Text(_studentDetail.mobilePhone),
+                  title: Text(_teacherDetail.mobilePhone),
                 ),
                 ListTile(
                   leading: Icon(FontAwesomeIcons.tag),
-                  title: Text(capitalize(_studentDetail.gender)),
+                  title: Text(capitalize(_teacherDetail.gender)),
                 ),
                 ListTile(
-                  leading: Icon(FontAwesomeIcons.book),
-                  title: Text(_studentDetail.grade.toUpperCase()),
+                  leading: Icon(FontAwesomeIcons.birthdayCake),
+                  title: Text(_teacherDetail.birthDate.toUpperCase().substring(0,10)),
                 ),
                 ListTile(
                   leading: Icon(FontAwesomeIcons.mapPin),
-                  title: Text(_studentDetail.address),
+                  title: Text(_teacherDetail.address),
                 ),
                 ListTile(
-                  leading: Icon(FontAwesomeIcons.heart),
-                  title: Text(_studentDetail.hobbies
+                  leading: Icon(FontAwesomeIcons.book),
+                  title: Text(_teacherDetail.lessons
                       .map((val) => capitalize(val))
                       .join(', ')),
                 ),
