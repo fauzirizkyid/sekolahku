@@ -1,23 +1,25 @@
 import 'package:sekolahku/domain/domain.dart';
 import 'package:sekolahku/util/capitalize.dart';
-import 'package:sekolahku/util/enum.dart';
 
 class Student extends Domain {
   static const genders = ['pria', 'wanita'];
   static const grades = ['tk', 'sd', 'smp', 'sma'];
   static const hobbiesList = ['membaca', 'menulis', 'menggambar'];
 
-  String firstName = '';
-  String lastName = '';
-  String mobilePhone = '';
-  String gender = '';
-  String grade = '';
-  List<String> hobbies = [];
-  String address = '';
+  late int idStudent;
+  late String firstName;
+  late String lastName;
+  late String mobilePhone;
+  late String gender;
+  late String grade;
+  late List<String> hobbies;
+  late String address;
+  late String createdAt;
+  late String updatedAt;
 
   String get fullName => '${capitalize(firstName)} ${capitalize(lastName)}';
 
-  Map<String, dynamic> toMap([Purpose purpose = Purpose.created]) {
+  Map<String, dynamic> toMap({String createdData = ''}) {
     var map = <String, dynamic>{
       'first_name': firstName,
       'last_name': lastName,
@@ -26,21 +28,17 @@ class Student extends Domain {
       'grade': grade,
       'hobbies': hobbies.join(', '),
       'address': address,
+      'created_at':
+          createdData != '' ? createdData : DateTime.now().toIso8601String(),
+      'updated_at': DateTime.now().toIso8601String(),
     };
-    // if (id != null) {
-    //   map['id_siswa'] = id;
-    // }
-    // if (purpose == Purpose.created && createdAt == null) {
-    //   map['created_at'] = DateTime.now().toIso8601String();
-    // }
-    // if (purpose == Purpose.updated && updatedAt == null) {
-    //   map['updated_at'] = DateTime.now().toIso8601String();
-    // }
 
     return map;
   }
 
   void fromMap(Map<String, dynamic> value) {
+    print(value);
+    idStudent = value['id'];
     firstName = value['firstName'];
     lastName = value['lastName'];
     mobilePhone = value['mobilePhone'];
@@ -48,12 +46,7 @@ class Student extends Domain {
     grade = value['grade'];
     address = value['address'];
     hobbies = value['hobbies'] is String ? value['hobbies'].split(', ') : [];
-    // id = value['id'];
-    // createdAt = value['createdAt'] is String
-    //     ? DateTime.parse(value['createdAt'])
-    //     : null;
-    // updatedAt = value['updatedAt'] is String
-    //     ? DateTime.parse(value['updatedAt'])
-    //     : null;
+    createdAt = value['createdAt'];
+    updatedAt = value['updatedAt'];
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sekolahku/domain/student_domain.dart';
+import 'package:sekolahku/screens/student_screens/student_form_screen.dart';
 import 'package:sekolahku/service/app_service.dart';
 import 'package:sekolahku/util/capitalize.dart';
 import 'package:sekolahku/widgets/components.dart';
@@ -34,7 +35,16 @@ class _StudentDetailState extends State<StudentDetail> {
               color: Colors.white,
             ),
             onPressed: () {
-              // do something
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => StudentForm(
+                            title: 'Edit Murid',
+                            isEdit: true,
+                            studentDomain: _studentDetail,
+                          ))).then((value) {
+                setState(() {});
+              });
             },
           ),
           IconButton(
@@ -46,9 +56,10 @@ class _StudentDetailState extends State<StudentDetail> {
               showAlertDialog(context,
                   content: 'Apa anda yakin akan menghapus data ' +
                       _studentDetail.fullName, continueAction: () {
+                Navigator.of(context, rootNavigator: true).pop();
                 AppService.studentService
-                    .deleteStudentBy(index: widget.studentSelectedIndex);
-                Navigator.pop(context, true);
+                    .deleteStudentBy(index: widget.studentSelectedIndex)
+                    .then((value) => {Navigator.pop(context, true)});
               });
             },
           ),
@@ -58,10 +69,9 @@ class _StudentDetailState extends State<StudentDetail> {
           future: AppService.studentService
               .findStudentBy(id: widget.studentSelectedIndex),
           builder: (context, snapshot) {
-            print(
-                'snapshot ${snapshot.connectionState} data: ${snapshot.data!.firstName}');
-            if (snapshot.connectionState == ConnectionState.none &&
-                !snapshot.hasData) {
+            if ((snapshot.connectionState == ConnectionState.none &&
+                    !snapshot.hasData) ||
+                snapshot.connectionState == ConnectionState.waiting) {
               return LinearProgressIndicator();
             }
             _studentDetail = snapshot.data!;
@@ -72,7 +82,7 @@ class _StudentDetailState extends State<StudentDetail> {
                 Padding(
                   padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
                   child: Image.asset(
-                    _studentDetail.gender == 'Pria'
+                    _studentDetail.gender.toUpperCase() == 'PRIA'
                         ? 'assets/icons/male-icon.png'
                         : 'assets/icons/female-icon.png',
                     width: 150.0,

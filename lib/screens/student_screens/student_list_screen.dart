@@ -25,15 +25,20 @@ class _StudentListState extends State<StudentList> {
       body: FutureBuilder<List<Student>>(
           future: AppService.studentService.findAllStudents(),
           builder: (context, snapshot) {
-            // print('snapshot.data.length ${snapshot.data!.length}');
+            // print('snapshot.data.length ${snapshot.data![0].firstName}');
             if ((snapshot.connectionState == ConnectionState.none &&
                     !snapshot.hasData) ||
                 snapshot.connectionState == ConnectionState.waiting) {
               print('project snapshot data is: ${snapshot.data}');
               return LinearProgressIndicator();
-            } else if (snapshot.data!.length == 0) {
+            } else if (snapshot.hasData && snapshot.data!.length > 0) {
+              _students = snapshot.data!;
+            } else {
+              print("ke container");
               return Container();
             }
+
+            print("_students: " + _students.length.toString());
 
             return ListView.separated(
               itemCount: _students.length,
@@ -48,8 +53,10 @@ class _StudentListState extends State<StudentList> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => StudentDetail(
-                                  studentSelectedIndex: i,
-                                )));
+                                  studentSelectedIndex: student.idStudent,
+                                ))).then((value) {
+                      setState(() {});
+                    });
                   },
                   leading: Icon(FontAwesomeIcons.user),
                   title: Text(student.fullName),
@@ -69,7 +76,13 @@ class _StudentListState extends State<StudentList> {
         child: Icon(FontAwesomeIcons.plus),
         onPressed: () {
           Navigator.push(
-              context, MaterialPageRoute(builder: (context) => StudentForm()));
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          StudentForm(title: 'Tambah Murid', isEdit: false)))
+              .then((value) {
+            setState(() {});
+          });
         },
       ),
     );

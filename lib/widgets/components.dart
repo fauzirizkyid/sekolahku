@@ -13,7 +13,7 @@ showAlertDialog(BuildContext context,
     onPressed: cancelAction != null
         ? cancelAction
         : () {
-            Navigator.pop(context);
+            Navigator.of(context, rootNavigator: true).pop();
           },
   );
   Widget continueButton = TextButton(

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sekolahku/screens/student_screens/student_list_screen.dart';
 
 class HomeScreen extends StatefulWidget {

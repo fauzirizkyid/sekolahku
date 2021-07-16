@@ -42,21 +42,28 @@ class StudentRepository {
         .then((database) => database!.rawQuery(sql))
         .then((data) {
       print('[db] success retrieve $data');
+      print('[db] success retrieve ' + data.length.toString());
       if (data.length == 0) {
         return [];
-      }
-      final List<Student> students = [];
-      for (var i = 0; i < data.length; i++) {
-        Student student = Student();
-        student.fromMap(data[i]);
-        students.add(student);
-      }
+      } else {
+        List<Student> students = [];
+        print(students);
+        for (var i = 0; i < data.length; i++) {
+          Student student = Student();
+          student.fromMap(data[i]);
+          students.add(student);
+          print("masuk sini>");
+        }
 
-      return students;
+        print("students:" + students.length.toString());
+
+        return students;
+      }
     });
   }
 
   Future<Student> findOne(int id) {
+    print("Masuk fungsi findOne dengan id: " + id.toString());
     final sql = '''
       SELECT
         id_siswa AS id,
@@ -90,7 +97,19 @@ class StudentRepository {
     // return students[index];
   }
 
-  void delete(int index) {
-    students.removeAt(index);
+  Future<void> delete(int idSiswa) {
+    return modelProvider!
+        .getDatabase()
+        .then((value) => value!.delete('siswa', where: 'id_siswa = $idSiswa'));
+  }
+
+  Future<int> updateStudent(int? idStudent, Student student, String createdAt) {
+    print("student.createdAt1");
+    print("student.createdAt");
+    print(createdAt);
+    return modelProvider!.getDatabase().then((value) {
+      return value!
+          .update('siswa', student.toMap(createdData: createdAt), where: 'id_siswa = $idStudent');
+    });
   }
 }

@@ -16,10 +16,16 @@ class StudentService {
   }
 
   Future<Student> findStudentBy({required int id}) {
+    print("findStudentBy: "+id.toString());
     return repository.findOne(id);
   }
 
-  void deleteStudentBy({required int index}) {
+  Future<void> deleteStudentBy({required int index}) {
     return repository.delete(index);
+  }
+
+  Future<int> updateStudent({int? id, required Student studentDomain, required String createdAt}) {
+    print(createdAt);
+    return repository.updateStudent(id, studentDomain, createdAt);
   }
 }
