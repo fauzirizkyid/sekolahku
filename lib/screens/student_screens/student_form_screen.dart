@@ -288,7 +288,7 @@ class _StudentFormState extends State<StudentForm> {
         'controller': _addressController,
         'title': 'Alamat',
         'typeForm': 'text',
-        'textInputType': TextInputType.phone,
+        'textInputType': TextInputType.text,
         'mandatory': true,
         'maxLines': 3
       },

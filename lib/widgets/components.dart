@@ -59,7 +59,8 @@ class TextStyled {
 }
 
 class Components {
-  static inputDecoration({@required enabled, @required icon, @required hint}) =>
+  static inputDecoration(
+          {@required enabled, @required icon, @required hint, dynamic onTap}) =>
       InputDecoration(
         enabled: enabled,
         suffixIconConstraints: BoxConstraints(
@@ -68,7 +69,13 @@ class Components {
         ),
         suffixIcon: Padding(
           padding: const EdgeInsetsDirectional.only(end: 10),
-          child: Icon(icon, size: 14), // myIcon is a 48px-wide widget.
+          child: onTap != null
+              ? IconButton(
+                  icon: Icon(icon, size: 18),
+                  onPressed: onTap,
+                  iconSize: 14,
+                )
+              : Icon(icon, size: 14), // myIcon is a 48px-wide widget.
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(5.0),
@@ -125,6 +132,7 @@ class Components {
     bool mandatory = false,
     bool decoration = false,
     bool enabled = true,
+    bool? obsecureText,
     TextAlign align = TextAlign.left,
     TextInputType inputType = TextInputType.text,
     IconData? icon,
@@ -132,7 +140,12 @@ class Components {
     int? maxLength,
     dynamic onTap,
     dynamic onChanged,
+    dynamic iconTap,
   }) {
+    if (obsecureText == null) {
+      obsecureText = title.contains('Password') ? true : false;
+    }
+
     Widget textForm() => Container(
           child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -156,6 +169,7 @@ class Components {
                 Container(
                   padding: EdgeInsets.only(top: 5, bottom: 10),
                   child: TextFormField(
+                    obscureText: obsecureText!,
                     controller: inputController,
                     style: TextStyled.normalBody,
                     textAlign: align,
@@ -165,7 +179,7 @@ class Components {
                     onTap: onTap,
                     onChanged: onChanged,
                     decoration: Components.inputDecoration(
-                        enabled: enabled, hint: hint, icon: icon),
+                        enabled: enabled, hint: hint, icon: icon, onTap: iconTap),
                     validator: (value) {
                       print(value);
                       if (mandatory) {

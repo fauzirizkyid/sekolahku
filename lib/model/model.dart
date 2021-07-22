@@ -40,8 +40,24 @@ class Model {
         updated_at TEXT
       );
     ''';
-    await db.execute(sqlTeacher);
+
+    String sqlUser = '''
+      CREATE TABLE IF NOT EXISTS User (
+        id_user INTEGER PRIMARY KEY NOT NULL,
+        first_name TEXT(20),
+        last_name TEXT(20),
+        gender TEXT(6),
+        address TEXT(45),
+        mobile_phone TEXT(13),
+        username TEXT,
+        password TEXT(45),
+        created_at TEXT,
+        updated_at TEXT
+      );
+    ''';
     await db.execute(sqlStudent);
+    await db.execute(sqlTeacher);
+    await db.execute(sqlUser);
   }
 
   Future<void> onUpgrade(Database db, int oldVersion, int newVersion) async {

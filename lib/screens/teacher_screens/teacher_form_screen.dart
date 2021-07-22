@@ -270,7 +270,7 @@ class _TeacherFormState extends State<TeacherForm> {
         'controller': _addressController,
         'title': 'Alamat',
         'typeForm': 'text',
-        'textInputType': TextInputType.phone,
+        'textInputType': TextInputType.text,
         'mandatory': true,
         'maxLines': 3
       },

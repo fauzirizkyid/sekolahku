@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sekolahku/screens/home_screen.dart';
+import 'package:sekolahku/screens/launchers/login.dart';
 import 'package:sekolahku/service/app_service.dart';
 import 'package:sekolahku/util/lifecycle_event_handler.dart';
 
@@ -63,7 +64,7 @@ class _MyAppState extends State<MyApp> {
         primarySwatch: Colors.blue,
       ),
       home: databaseIsReady
-          ? HomeScreen()
+          ? LoginPage()
           : Scaffold(
               body: Center(
                 child: CircularProgressIndicator(),
